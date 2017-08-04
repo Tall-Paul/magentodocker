@@ -2,8 +2,7 @@ version: "2"
 
 services:
     php:
-        container_name: pd_stack_php
-        privileged: true
+        container_name: magento_stack_php
         build:
             dockerfile: Dockerfile
             context: ./php
@@ -11,7 +10,7 @@ services:
             - mariadb
             - redis
         volumes:
-            - "../..:/code:rw"
+            - "..:/code:rw"
             - "./php/local.xml:/code/http/app/etc/local.xml"
             - "./php/n98-magerun.phar:/code/n98-magerun.phar"
         #command: mount -t overlay -o lowerdir=/code-src,upperdir=/var/local-code,workdir=/var/workdir none /code
@@ -28,6 +27,7 @@ services:
             - "MYSQL_PASSWORD=magento"
         volumes:
             - "./db/mariadb:/var/lib/mysql:rw"
+            - "./db/import:/docker-entrypoint-initdb.d:rw"
         #command: mysql -u magento -pmagento magentodb < /tmp/update.sql
         ports:
             - "3306:3306"
@@ -41,7 +41,7 @@ services:
         links:
             - php
         volumes:
-            - "../..:/code:rw"
+            - "..:/code:rw"
             - "./web/nginx/nginx.conf:/etc/nginx/nginx.conf"
             - "./web/nginx/fastcgi_params:/etc/nginx/fastcgi_params"
             - "./web/nginx/conf_m1/:/etc/nginx/conf_m1/"
